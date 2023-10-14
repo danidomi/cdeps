@@ -1,10 +1,15 @@
 #!/bin/bash
 
-# Check if the necessary build tools are installed (you can add more as needed)
-if ! command -v gcc &> /dev/null; then
-    echo "gcc is not installed. Please install it first."
-    exit 1
-fi
+# List of dependencies
+dependencies=("gcc" "curl" "unzip")
+
+# Loop through the dependencies
+for dependency in "${dependencies[@]}"; do
+    if ! command -v "$dependency" &> /dev/null; then
+        echo "$dependency is not installed. Please install it first."
+        exit 1
+    fi
+done
 
 plugin_sources=$(find plugins -type f -name "*.c")
 
@@ -19,6 +24,3 @@ if [ $? -eq 0 ]; then
 else
     echo "Compilation failed. Please check for errors in your C code."
 fi
-
-export PATH="$HOME/.local/bin:$PATH" >> ~/.zshrc
-echo "> source ~/.zshrc"

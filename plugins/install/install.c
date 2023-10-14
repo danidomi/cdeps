@@ -3,7 +3,17 @@
 void download(char *repoURL, char *version) {
     char command[256];
     char * downloadDir = "deps";
-    snprintf(command, sizeof(command), "curl -o %s/%s.o -sLJO https://%s/archive/%s/%s ", downloadDir, version, repoURL, version, repoURL);
+    char * repoName = strrchr(repoURL, '/');
+    snprintf(command, sizeof(command), "curl -o %s/%s.zip -sLJO https://%s/releases/download/%s%s.zip", downloadDir, repoName, repoURL, version, repoName);
+    system(command);
+
+}
+
+void unzip(char *repoURL) {
+    char command[256];
+    char * downloadDir = "deps";
+    char * repoName = strrchr(repoURL, '/');
+    snprintf(command, sizeof(command), "unzip -q %s%s.zip -d %s && rm %s%s.zip", downloadDir, repoName, downloadDir, downloadDir, repoName);
     system(command);
 }
 
@@ -28,6 +38,7 @@ int install() {
         repoURL = strsep(&string, " \n");
         version = strsep(&string, " \n");
         download(repoURL, version);
+        unzip(repoURL);
     }
 
     fclose(file);
