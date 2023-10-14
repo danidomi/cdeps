@@ -4,7 +4,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include "../../common.h"
 
 #define MAX_LINE_LENGTH 256
 
-int install();
+int install(const char *dependency);
