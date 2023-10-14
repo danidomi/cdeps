@@ -17,5 +17,9 @@ int main(int argc, char *argv[]) {
         }
     } else if (strcmp("clean", argv[1]) == 0) {
         return clean();
+    } else if (strcmp("list", argv[1]) == 0) {
+        return list();
+    } else {
+        return usage();
     }
 }

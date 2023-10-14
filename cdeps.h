@@ -5,3 +5,4 @@
 #include "plugins/version/version.h"
 #include "plugins/usage/usage.h"
 #include "plugins/clean/clean.h"
+#include "plugins/list/list.h"
