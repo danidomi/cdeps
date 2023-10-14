@@ -1,11 +1,31 @@
 #include "install.h"
 
+const char * downloadLatestURL = "https://%s/releases/latest/download/%s.zip";
+const char * downloadVersionURL = "https://%s/releases/download/%s%s.zip";
+
+char * get_download_latest_URL(const char *repoURL, const char *repoName) {
+    char *url = (char *)malloc(256);
+    sprintf(url, downloadLatestURL, repoURL, repoName);
+    return url;
+}
+
+char * get_download_version_URL(const char *repoURL, const char *version,const char *repoName) {
+    char *url = (char *)malloc(256);
+    sprintf(url, downloadVersionURL, repoURL, version, repoName);
+    return url;
+}
+
 void download(char *repoURL, char *version) {
     char command[256];
     char * repoName = strrchr(repoURL, '/');
-    snprintf(command, sizeof(command), "curl -o %s%s.zip -sLJO https://%s/releases/download/%s%s.zip", FOLDER, repoName, repoURL, version, repoName);
+    char * url = NULL;
+    if (strcmp(version, LATEST_VERSION) == 0) {
+        url = get_download_latest_URL(repoURL, repoName);
+    }else {
+        url = get_download_version_URL(repoURL, version, repoName);
+    }
+    snprintf(command, sizeof(command), "curl -o %s%s.zip -sLJO %s", FOLDER, repoName, url);
     system(command);
-
 }
 
 void unzip(char *repoURL) {
@@ -18,7 +38,7 @@ void unzip(char *repoURL) {
 int handleSingleInstall(const char *dependency) {
     // Check if the package includes a '@' character
     if (strchr(dependency, '@') == NULL) {
-        printf("cdeps: 'cdeps install <dependency>@<version>' requires a version when not provided a 'c.deps' file.\n");
+        printf("cdeps: 'cdeps install <dependency>@<version>' requires a version when not provided a '%s' file.\n", CDEPS_FILE);
         return 1;
     }
     char *repoURL = NULL;
@@ -37,10 +57,10 @@ int handleSingleInstall(const char *dependency) {
 }
 
 int handleFileInstall() {
-    FILE *file = fopen("c.deps", "r");
+    FILE *file = fopen(CDEPS_FILE, "r");
 
     if (!file) {
-        perror("Error opening c.deps file");
+        printf("Error opening %s file", CDEPS_FILE);
         return 1;
     }
 

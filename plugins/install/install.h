@@ -7,5 +7,7 @@
 #include "../../common.h"
 
 #define MAX_LINE_LENGTH 256
+#define LATEST_VERSION "latest"
+#define CDEPS_FILE "c.deps"
 
 int install(const char *dependency);
