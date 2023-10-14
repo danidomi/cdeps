@@ -1,8 +1,6 @@
-# cdeps
+# cdeps - C Dependencies Manager
 
 [![GitHub release](https://img.shields.io/github/release/danidomi/cdeps.svg)](https://github.com/danidomi/cdeps/releases)
-
-# cdeps - C Dependencies Manager
 
 `cdeps` is a command-line tool for managing C source code dependencies in C projects. It provides a set of commands to help you manage and install C dependencies.
 
@@ -16,10 +14,19 @@
 
 ## Installation
 
-Type `/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/danidomi/cdeps/HEAD/install.sh)"` to install.
+To install, simply execute the following command in your terminal:
+```shell
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/danidomi/cdeps/HEAD/install.sh)"
+```
+
+After the installation process is complete, make sure to add it to your system's PATH by running the following command:
+```shell
+export PATH="$HOME/.local/bin:$PATH"
+```
 
 ## Usage
-After installation, you can use cdeps to manage your C project's dependencies. Run cdeps with the desired command and optional arguments:
+
+After installation, you can use `cdeps` to manage your C project's dependencies. Run `cdeps` with the desired command and optional arguments:
 
 ```shell
 cdeps
