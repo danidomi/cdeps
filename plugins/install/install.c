@@ -4,7 +4,6 @@ void download(char *repoURL, char *version) {
     char command[256];
     char * repoName = strrchr(repoURL, '/');
     snprintf(command, sizeof(command), "curl -o %s%s.zip -sLJO https://%s/releases/download/%s%s.zip", FOLDER, repoName, repoURL, version, repoName);
-    printf("%s\n",command);
     system(command);
 
 }
