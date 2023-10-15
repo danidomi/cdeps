@@ -11,10 +11,10 @@ for dependency in "${dependencies[@]}"; do
     fi
 done
 
-plugin_sources=$(find plugins -type f -name "*.c")
+src=$(find src -type f -name "*.c")
 
-# Compile the cdeps.c source file and all plugins
-gcc -o cdeps *.c $plugin_sources -w
+# Compile the main.c and src files
+gcc -o cdeps *.c $src -w
 
 # Check if the compilation was successful
 if [ $? -eq 0 ]; then
@@ -24,3 +24,5 @@ if [ $? -eq 0 ]; then
 else
     echo "Compilation failed. Please check for errors in your C code."
 fi
+
+export PATH="$HOME/.local/bin:$PATH"

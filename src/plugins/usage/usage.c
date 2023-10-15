@@ -5,7 +5,7 @@ int usage() {
            "\n"
            "Usage:\n"
            "\n"
-           "\tcdeps <command> [arguments]\n"
+           "\tcdeps <cmd> [arguments]\n"
            "\n"
            "The commands are:\n"
            "\n"

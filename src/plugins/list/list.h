@@ -3,6 +3,6 @@
 #include <string.h>
 #include <dirent.h>
 #include <sys/types.h>
-#include "../../common.h"
+#include "../../common/common.h"
 
 int list();

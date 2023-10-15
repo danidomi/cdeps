@@ -15,7 +15,7 @@ char * get_download_version_URL(const char *repoURL, const char *version,const c
     return url;
 }
 
-void download(char *repoURL, char *version) {
+int download(char *repoURL, char *version) {
     char command[256];
     char * repoName = strrchr(repoURL, '/');
     char * url = NULL;
@@ -25,14 +25,14 @@ void download(char *repoURL, char *version) {
         url = get_download_version_URL(repoURL, version, repoName);
     }
     snprintf(command, sizeof(command), "curl -o %s%s.zip -sLJO %s", FOLDER, repoName, url);
-    system(command);
+    return system(command);
 }
 
-void unzip(char *repoURL) {
+int unzip(char *repoURL) {
     char command[256];
     char * repoName = strrchr(repoURL, '/');
     snprintf(command, sizeof(command), "unzip -q %s%s.zip -d %s && rm %s%s.zip", FOLDER, repoName, FOLDER, FOLDER, repoName);
-    system(command);
+    return system(command);
 }
 
 int handleSingleInstall(const char *dependency) {
@@ -47,8 +47,11 @@ int handleSingleInstall(const char *dependency) {
 
     repoURL = strsep(&string, "@");
     version = strsep(&string, "\0");  // Change "\n" to "\0"
-    download(repoURL, version);
-    unzip(repoURL);
+    if(download(repoURL, version) == 0) {
+        unzip(repoURL);
+    } else {
+        //TODO handle unable to download
+    }
 
     // Free the allocated memory for 'string'
     free(string);
@@ -69,6 +72,12 @@ int handleFileInstall() {
     char *version = NULL;
 
     while (fgets(line, sizeof(line), file)) {
+        // Check if the line contains at least one space
+        if (strchr(line, ' ') == NULL) {
+            printf("Invalid dependency: %s\n", line);
+            continue;
+        }
+
         if (line[0] == '#' && strlen(line) == 0) {
             continue;  // Skip comments
         }
@@ -76,16 +85,15 @@ int handleFileInstall() {
         char *string = strdup(line);
         repoURL = strsep(&string, " \n");
         version = strsep(&string, " \n");
-        download(repoURL, version);
-        unzip(repoURL);
+        if(download(repoURL, version) == 0)
+            unzip(repoURL);
+        //TODO handle unable to download
     }
 
     fclose(file);
 }
 
 int createFolder() {
-
-
     // Use the stat function to check if the folder exists
     struct stat st;
     if (stat(FOLDER, &st) != 0) {

@@ -4,12 +4,10 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include "../../common.h"
+#include "../../common/common.h"
 
-#define PATH_SEPARATOR "/"
 #define MAX_LINE_LENGTH 256
+#define LATEST_VERSION "latest"
+#define CDEPS_FILE "c.deps"
 
-int clean();
+int install(const char *dependency);
