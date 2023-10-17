@@ -15,10 +15,10 @@ done
 wget https://github.com/danidomi/cdeps/archive/refs/heads/main.zip -O cdeps.zip
 
 #unzip it
-unzip -q cdeps.zip -d cdeps && rm cdeps.zip
+unzip cdeps.zip
 
 # cd a directory
-cd cdeps
+cd cdeps-main
 
 src=$(find src -type f -name "*.c")
 gcc -o cdeps *.c $src -w
