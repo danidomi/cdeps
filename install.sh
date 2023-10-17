@@ -12,7 +12,7 @@ for dependency in "${dependencies[@]}"; do
 done
 
 # Compile the main.c and src files
-curl -o cdeps.zip https://github.com/danidomi/cdeps/archive/refs/heads/main.zip
+wget https://github.com/danidomi/cdeps/archive/refs/heads/main.zip -O cdeps.zip
 
 #unzip it
 unzip -q cdeps.zip -d cdeps && rm cdeps.zip
