@@ -12,7 +12,10 @@ for dependency in "${dependencies[@]}"; do
 done
 
 # Compile the main.c and src files
-gh repo clone danidomi/cdeps
+curl -o cdeps.zip https://github.com/danidomi/cdeps/archive/refs/heads/main.zip
+
+#unzip it
+unzip -q cdeps.zip -d cdeps && rm cdeps.zip
 
 # cd a directory
 cd cdeps
