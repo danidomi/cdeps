@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # List of dependencies
-dependencies=("gcc" "curl" "unzip" "gh")
+dependencies=("gcc" "curl" "unzip")
 
 # Loop through the dependencies
 for dependency in "${dependencies[@]}"; do
