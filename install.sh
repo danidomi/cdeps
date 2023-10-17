@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # List of dependencies
-dependencies=("gcc" "curl" "unzip")
+dependencies=("gcc" "curl" "unzip" "gh")
 
 # Loop through the dependencies
 for dependency in "${dependencies[@]}"; do
@@ -11,9 +11,13 @@ for dependency in "${dependencies[@]}"; do
     fi
 done
 
-src=$(find src -type f -name "*.c")
-
 # Compile the main.c and src files
+gh repo clone danidomi/cdeps
+
+# cd a directory
+cd cdeps
+
+src=$(find src -type f -name "*.c")
 gcc -o cdeps *.c $src -w
 
 # Check if the compilation was successful
@@ -24,5 +28,7 @@ if [ $? -eq 0 ]; then
 else
     echo "Compilation failed. Please check for errors in your C code."
 fi
+
+rm -rf cdeps
 
 export PATH="$HOME/.local/bin:$PATH"
