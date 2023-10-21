@@ -2,13 +2,13 @@
 
 int list() {
     // Open the "deps" directory
-    DIR* dir = opendir(FOLDER);
+    DIR *dir = opendir(FOLDER);
 
     if (dir == NULL) {
         return 1;
     }
 
-    struct dirent* entry;
+    struct dirent *entry;
     while ((entry = readdir(dir)) != NULL) {
         // Skip "." and ".." directory entries
         if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0) {
