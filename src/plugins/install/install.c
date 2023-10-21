@@ -25,14 +25,19 @@ int download(const struct utsname systemInfo, char *repoURL, char *version) {
     } else {
         url = get_download_version_URL(systemInfo, repoURL, version);
     }
-    snprintf(command, sizeof(command), "curl -o %s/%s_%s.zip -sLJO %s", FOLDER, systemInfo.sysname, systemInfo.machine, url);
+    snprintf(command, sizeof(command), "curl -o %s/%s_%s.zip -sLJO %s", FOLDER, systemInfo.sysname, systemInfo.machine,
+             url);
+
     return system(command);
 }
 
-int unzip(const struct utsname systemInfo) {
+int unzip(const struct utsname systemInfo, char *repoURL) {
     char command[256];
-    snprintf(command, sizeof(command), "unzip -q %s/%s_%s.zip -d %s && rm %s/%s_%s.zip", FOLDER, systemInfo.sysname, systemInfo.machine, FOLDER, FOLDER,
+    char *repoName = strrchr(repoURL, '/');
+    snprintf(command, sizeof(command), "unzip -q %s/%s_%s.zip -d %s%s && rm %s/%s_%s.zip", FOLDER, systemInfo.sysname,
+             systemInfo.machine, FOLDER,  repoName,  FOLDER,
              systemInfo.sysname, systemInfo.machine);
+
     return system(command);
 }
 
@@ -57,7 +62,7 @@ int handleSingleInstall(const char *dependency) {
     repoURL = strsep(&string, "@");
     version = strsep(&string, "\0");  // Change "\n" to "\0"
     if (download(systemInfo, repoURL, version) == 0) {
-        unzip(systemInfo);
+        unzip(systemInfo, repoURL);
     } else {
         //TODO handle unable to download
     }
@@ -102,7 +107,7 @@ int handleFileInstall() {
         repoURL = strsep(&string, " \n");
         version = strsep(&string, " \n");
         if (download(systemInfo, repoURL, version) == 0)
-            unzip(systemInfo);
+            unzip(systemInfo, repoURL);
         //TODO handle unable to download
     }
 
