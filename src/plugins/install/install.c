@@ -1,11 +1,11 @@
 #include "install.h"
 
 const char *downloadLatestURL = "https://%s/releases/latest/download/%s_%s.zip";
-const char *downloadVersionURL = "https://%s/releases/download/%s%s_%s.zip";
+const char *downloadVersionURL = "https://%s/releases/download/%s/%s_%s.zip";
 
 char *get_download_latest_URL(const struct utsname systemInfo, const char *repoURL, const char *repoName) {
     char *url = (char *) malloc(256);
-    sprintf(url, downloadLatestURL, repoURL, repoName, systemInfo.sysname, systemInfo.machine);
+    sprintf(url, downloadLatestURL, repoURL, systemInfo.sysname, systemInfo.machine);
     return url;
 }
 
@@ -15,31 +15,24 @@ char *get_download_version_URL(const struct utsname systemInfo, const char *repo
     return url;
 }
 
-int download(char *repoURL, char *version) {
+int download(const struct utsname systemInfo, char *repoURL, char *version) {
     char command[256];
     char *repoName = strrchr(repoURL, '/');
     char *url = NULL;
-    struct utsname systemInfo;
-
-    if (uname(&systemInfo) == -1) {
-        printf("unable to uname");
-        return 1;
-    }
 
     if (strcmp(version, LATEST_VERSION) == 0) {
         url = get_download_latest_URL(systemInfo, repoURL, repoName);
     } else {
         url = get_download_version_URL(systemInfo, repoURL, version);
     }
-    snprintf(command, sizeof(command), "curl -o %s%s.zip -sLJO %s", FOLDER, repoName, url);
+    snprintf(command, sizeof(command), "curl -o %s/%s_%s.zip -sLJO %s", FOLDER, systemInfo.sysname, systemInfo.machine, url);
     return system(command);
 }
 
-int unzip(char *repoURL) {
+int unzip(const struct utsname systemInfo) {
     char command[256];
-    char *repoName = strrchr(repoURL, '/');
-    snprintf(command, sizeof(command), "unzip -q %s%s.zip -d %s && rm %s%s.zip", FOLDER, repoName, FOLDER, FOLDER,
-             repoName);
+    snprintf(command, sizeof(command), "unzip -q %s/%s_%s.zip -d %s && rm %s/%s_%s.zip", FOLDER, systemInfo.sysname, systemInfo.machine, FOLDER, FOLDER,
+             systemInfo.sysname, systemInfo.machine);
     return system(command);
 }
 
@@ -54,10 +47,17 @@ int handleSingleInstall(const char *dependency) {
     char *version = NULL;
     char *string = strdup(dependency);
 
+    struct utsname systemInfo;
+
+    if (uname(&systemInfo) == -1) {
+        printf("unable to uname");
+        return 1;
+    }
+
     repoURL = strsep(&string, "@");
     version = strsep(&string, "\0");  // Change "\n" to "\0"
-    if (download(repoURL, version) == 0) {
-        unzip(repoURL);
+    if (download(systemInfo, repoURL, version) == 0) {
+        unzip(systemInfo);
     } else {
         //TODO handle unable to download
     }
@@ -80,6 +80,13 @@ int handleFileInstall() {
     char *repoURL = NULL;
     char *version = NULL;
 
+    struct utsname systemInfo;
+
+    if (uname(&systemInfo) == -1) {
+        printf("unable to uname");
+        return 1;
+    }
+
     while (fgets(line, sizeof(line), file)) {
         // Check if the line contains at least one space
         if (strchr(line, ' ') == NULL) {
@@ -94,8 +101,8 @@ int handleFileInstall() {
         char *string = strdup(line);
         repoURL = strsep(&string, " \n");
         version = strsep(&string, " \n");
-        if (download(repoURL, version) == 0)
-            unzip(repoURL);
+        if (download(systemInfo, repoURL, version) == 0)
+            unzip(systemInfo);
         //TODO handle unable to download
     }
 
@@ -112,7 +119,6 @@ int createFolder() {
 
     return 0;
 }
-
 
 int install(const char *dependency) {
     int success = createFolder();
