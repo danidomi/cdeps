@@ -4,7 +4,7 @@
 app_name="cdeps"
 
 # repo
-branch = "main"
+branch="main"
 
 # List of dependencies
 dependencies=("gcc" "curl" "unzip")
@@ -18,7 +18,7 @@ for dependency in "${dependencies[@]}"; do
 done
 
 # Compile the main.c and src files
-wget https://github.com/danidomi/"$app_name"/archive/refs/heads/"$branch".zip -O "$app_name".zip
+wget "https://github.com/danidomi/$app_name/archive/refs/heads/$branch.zip" -O "$app_name".zip
 
 #unzip it
 unzip "$app_name".zip
