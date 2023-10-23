@@ -35,7 +35,7 @@ int unzip(const struct utsname systemInfo, char *repoURL) {
     char command[256];
     char *repoName = strrchr(repoURL, '/');
     snprintf(command, sizeof(command), "unzip -q %s/%s_%s.zip -d %s%s && rm %s/%s_%s.zip", FOLDER, systemInfo.sysname,
-             systemInfo.machine, FOLDER,  repoName,  FOLDER,
+             systemInfo.machine, FOLDER, repoName, FOLDER,
              systemInfo.sysname, systemInfo.machine);
 
     return system(command);
@@ -44,8 +44,8 @@ int unzip(const struct utsname systemInfo, char *repoURL) {
 int handleSingleInstall(const char *dependency) {
     // Check if the package includes a '@' character
     if (strchr(dependency, '@') == NULL) {
-        printf("cdeps: 'cdeps install <dependency>@<version>' requires a version when not provided a '%s' file.\n",
-               CDEPS_FILE);
+        printf("%s: '%s install <dependency>@<version>' requires a version when not provided a '%s' file.\n",
+               CMD, CMD, CDEPS_FILE);
         return 1;
     }
     char *repoURL = NULL;
@@ -61,10 +61,14 @@ int handleSingleInstall(const char *dependency) {
 
     repoURL = strsep(&string, "@");
     version = strsep(&string, "\0");  // Change "\n" to "\0"
-    if (download(systemInfo, repoURL, version) == 0) {
-        unzip(systemInfo, repoURL);
-    } else {
-        //TODO handle unable to download
+    if (download(systemInfo, repoURL, version) != 0) {
+        printf("Unable to download dependency");
+        return 1;
+    }
+
+    if (unzip(systemInfo, repoURL) != 0) {
+        printf("Unable to unzip dependency");
+        return 1;
     }
 
     // Free the allocated memory for 'string'
@@ -99,19 +103,25 @@ int handleFileInstall() {
             continue;
         }
 
-        if (line[0] == '#' && strlen(line) == 0) {
-            continue;  // Skip comments
+        if (line[0] == '#' || strlen(line) == 0) {
+            continue;  // Skip comments or empty lines
         }
 
         char *string = strdup(line);
         repoURL = strsep(&string, " \n");
         version = strsep(&string, " \n");
-        if (download(systemInfo, repoURL, version) == 0)
-            unzip(systemInfo, repoURL);
-        //TODO handle unable to download
+        if (download(systemInfo, repoURL, version) != 0) {
+            printf("Unable to download dependency: %s\n", line);
+            return 1;
+        }
+
+        if (unzip(systemInfo, repoURL) != 0) {
+            printf("Unable to unzip dependency");
+            return 1;
+        };
     }
 
-    fclose(file);
+    return fclose(file);
 }
 
 int createFolder() {
