@@ -18,7 +18,7 @@ for dependency in "${dependencies[@]}"; do
 done
 
 # Download
-curl -o "$app_name.zip" "https://github.com/danidomi/$app_name/archive/refs/heads/$branch.zip"
+curl -o "$app_name.zip" -sLJO "https://github.com/danidomi/$app_name/archive/refs/heads/$branch.zip"
 
 # Unzip it
 unzip "$app_name".zip
